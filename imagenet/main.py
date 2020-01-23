@@ -61,7 +61,8 @@ parser.add_argument('--world-size', default=-1, type=int,
 parser.add_argument('--rank', default=-1, type=int,
                     help='node rank for distributed training')
 parser.add_argument('--dist-url', default='tcp://224.66.41.62:23456', type=str,
-                    help='url used to set up distributed training')
+                    help='url used to set up distributed training. This should be'
+                         'the IP address and open port number of the master node')
 parser.add_argument('--dist-backend', default='nccl', type=str,
                     help='distributed backend')
 parser.add_argument('--seed', default=None, type=int,
@@ -194,6 +195,9 @@ def main_worker(gpu, ngpus_per_node, args):
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
 
+    # cudnn will look for the optimal set of algorithms for that
+    # particular configuration. this will have faster runtime if
+    # your input sizes does not change at each iteration
     cudnn.benchmark = True
 
     # Data loading code
@@ -212,6 +216,7 @@ def main_worker(gpu, ngpus_per_node, args):
         ]))
 
     if args.distributed:
+        # makes sure that each process gets a different slice of the training data
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
     else:
         train_sampler = None
