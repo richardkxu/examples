@@ -116,8 +116,6 @@ def main():
 def main_worker(gpu, ngpus_per_node, args):
     global best_acc1
     args.gpu = gpu
-    print("gpu is {}".format(gpu))
-    print("args.gpu is{}".format(args.gpu))
 
     if args.gpu is not None:
         print("Use GPU: {} for training".format(args.gpu))
@@ -145,7 +143,6 @@ def main_worker(gpu, ngpus_per_node, args):
         # DistributedDataParallel will use all available devices.
         print("args.gpu is::::{}".format(args.gpu))
         if args.gpu is not None:
-            print("flag1")
             torch.cuda.set_device(args.gpu)
             model.cuda(args.gpu)
             # When using a single GPU per process and per
@@ -155,7 +152,6 @@ def main_worker(gpu, ngpus_per_node, args):
             args.workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
             model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
         else:
-            print("flag2")
             model.cuda()
             # DistributedDataParallel will divide and allocate batch_size to all
             # available GPUs if device_ids are not set
