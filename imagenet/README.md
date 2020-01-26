@@ -30,20 +30,31 @@ You should always use the NCCL backend for multi-processing distributed training
 ### Single node, multiple GPUs:
 
 ```bash
-python main.py -a resnet50 --dist-url 'tcp://127.0.0.1:FREEPORT' --dist-backend 'nccl' --multiprocessing-distributed --world-size 1 --rank 0 [imagenet-folder with train and val folders]
+python distributed_imagenet.py -a resnet50 --dist-url 'tcp://192.168.100.4:8888' --dist-backend 'nccl' --world-size 1 --rank 0 --desired-acc 0.6 /home/shared/imagenet/raw/
 ```
 
 ### Multiple nodes:
 
 Node 0:
 ```bash
-python main.py -a resnet50 --dist-url 'tcp://IP_OF_NODE0:FREEPORT' --dist-backend 'nccl' --multiprocessing-distributed --world-size 2 --rank 0 [imagenet-folder with train and val folders]
+python distributed_imagenet.py -a resnet50 --dist-url 'tcp://192.168.100.4:8888' --dist-backend 'nccl' --world-size 4 --rank 0 --desired-acc 0.6 /home/shared/imagenet/raw/
 ```
 
 Node 1:
 ```bash
-python main.py -a resnet50 --dist-url 'tcp://IP_OF_NODE0:FREEPORT' --dist-backend 'nccl' --multiprocessing-distributed --world-size 2 --rank 1 [imagenet-folder with train and val folders]
+python distributed_imagenet.py -a resnet50 --dist-url 'tcp://192.168.100.4:8888' --dist-backend 'nccl' --world-size 4 --rank 1 --desired-acc 0.6 /home/shared/imagenet/raw/
 ```
+
+Node 2:
+```bash
+python distributed_imagenet.py -a resnet50 --dist-url 'tcp://192.168.100.4:8888' --dist-backend 'nccl' --world-size 4 --rank 2 --desired-acc 0.6 /home/shared/imagenet/raw/
+```
+
+Node 3:
+```bash
+python distributed_imagenet.py -a resnet50 --dist-url 'tcp://192.168.100.4:8888' --dist-backend 'nccl' --world-size 4 --rank 3 --desired-acc 0.6 /home/shared/imagenet/raw/
+```
+
 
 ## Usage
 
