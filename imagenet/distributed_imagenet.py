@@ -65,8 +65,6 @@ parser.add_argument('--dist-url', default='tcp://224.66.41.62:23456', type=str,
                          'the IP address and open port number of the master node')
 parser.add_argument('--dist-backend', default='nccl', type=str,
                     help='distributed backend')
-parser.add_argument('--seed', default=None, type=int,
-                    help='seed for initializing training. ')
 parser.add_argument('--desired-acc', default=None, type=float,
                     help='Training will stop after desired-acc is reached.')
 
@@ -75,9 +73,6 @@ best_acc1 = 0
 
 def main():
     args = parser.parse_args()
-
-    if args.dist_url == "env://" and args.world_size == -1:
-        args.world_size = int(os.environ["WORLD_SIZE"])
 
     ngpus_per_node = torch.cuda.device_count()
 
@@ -94,9 +89,6 @@ def main():
 def main_worker(gpu, ngpus_per_node, args):
     global best_acc1
     print("Use GPU: {} for training".format(gpu))
-
-    if args.dist_url == "env://" and args.rank == -1:
-        args.rank = int(os.environ["RANK"])
 
     # For multiprocessing distributed training, rank needs to be the
     # global rank among all the processes
@@ -215,7 +207,7 @@ def main_worker(gpu, ngpus_per_node, args):
             }, is_best)
 
         # stop training once reach desired accuracy
-        if not args.desired_acc and best_acc1 >= args.desired_acc:
+        if args.desired_acc and best_acc1 >= args.desired_acc:
             time_elapsed = time.time() - end
             save_checkpoint({
                 'epoch': epoch + 1,
